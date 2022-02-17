@@ -3,23 +3,27 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 import java.io.File;
+import java.io.FileNotFoundException;
 
 public class AppUI {
     //attributes
     private boolean isVisible;
     private boolean reloadEnabled;
-    private File gcodeFile;
+    private LogManager logmanager;
 
     //global UI components
     private JFrame window;
     private JTextArea _TaLog;
+    private JLabel Status;
 
     //constructor
-    public AppUI() {
+    public AppUI(LogManager _logmanager) {
         //initialize attributes
         isVisible = false;
         reloadEnabled = false;
+        logmanager = _logmanager;
 
         //colors
         Color colorBackground = new Color(179, 179, 179);
@@ -136,8 +140,8 @@ public class AppUI {
         lm.gridy = 2;
         lm.gridwidth = 2;
         addObject(_PanelEditor, lm, pane, window);
-        JTextArea _TaEditor = new JTextArea(20, 50);
-        JScrollPane _SPEditor = new JScrollPane(_TaEditor);
+        JTextArea Editor = new JTextArea(18, 60);
+        JScrollPane _SPEditor = new JScrollPane(Editor);
         _SPEditor.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         _SPEditor.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         lm.gridy = 0;
@@ -152,7 +156,7 @@ public class AppUI {
         lm.gridy = 3;
         lm.gridwidth = 2;
         addObject(_PanelLog, lm, pane, window);
-        _TaLog = new JTextArea(5, 50);
+        _TaLog = new JTextArea(5, 60);
         _TaLog.setEditable(false);
         JScrollPane _SPLog = new JScrollPane(_TaLog);
         _SPLog.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -160,10 +164,67 @@ public class AppUI {
         lm.gridy = 0;
         lm.gridwidth = 1;
         addObject(_SPLog, lm, _PanelLog, window);
+        _TaLog.setText(logmanager.printLog());
+
+        //Status bar
+        lm.ipadx = 0;
+        lm.ipady = 0;
+        lm.gridx = 0;
+        lm.gridy = 4;
+        lm.gridwidth = 2;
+        addObject(new JSeparator(), lm, pane, window);
+        Status = new JLabel("Status:  Initializing... Please wait.");
+        lm.gridy = 5;
+        lm.ipady = 3;
+        addObject(Status, lm, pane, window);
+
+
+        //BUTTON ACTIONS
+        //open file button
+        _BtOpen.addActionListener(a ->
+                {
+                    addLog("Open File... Please select a G-Code file.");
+                    setStatus("Open... Please select a G-Code file.");
+                    FileManager fileman = new FileManager(window);
+                    try{
+                        File gcodeFile = fileman.selectorOpen();
+                        addLog("Selected file '" + gcodeFile.toString() + "' successfully.");
+                        addLog("Opening file. Please wait...");
+                        setStatus("Opening... Please wait.");
+                        FileHandler filehandler = new FileHandler(gcodeFile);
+                        Editor.setText(filehandler.readText());
+                        addLog("Opened file successfully.");
+                    } catch(Exception ex) {
+                        addLog("Error trying to open File: " + ex);
+                    }
+                    setStatus("Idle");
+                });
+        //save file button
+        _BtSave.addActionListener(a ->
+                {
+                    addLog("Save File... Please select destination and name.");
+                    setStatus("Save... Please select destination and name.");
+                    FileManager fileman = new FileManager(window);
+                    try{
+                        File gcodeFile = fileman.selectorSave("nc", "NC G-Code");
+                        addLog("Selected destination '" + gcodeFile.toString() + "' successfully.");
+                        addLog("Saving to '" + gcodeFile.toString() + "'. Please wait...");
+                        setStatus("Saving... Please wait.");
+                        FileHandler filehandler = new FileHandler(gcodeFile);
+                        filehandler.writeText(Editor.getText());
+                        addLog("Saved to '" + gcodeFile.toString() + "' successfully.");
+                    } catch(Exception ex) {
+                        addLog("Error trying to save File: " + ex);
+                    }
+                    setStatus("Idle");
+                });
+        //convert button
+
+
 
         //show window
         setVisibility(true, window);
-        reloadEnabled = true;
+        setStatus("Idle");
     }
 
     //methods
@@ -181,8 +242,8 @@ public class AppUI {
         }
     }
 
-    public void updateLog(String log) {
-        _TaLog.setText(log);
+    public void update() {
+        _TaLog.setText(logmanager.printLog());
         reload(false, window);
     }
 
@@ -200,5 +261,15 @@ public class AppUI {
         button.setForeground(text);
         button.setOpaque(true);
         button.setBorderPainted(false);
+    }
+
+    public void addLog(String entryText) {
+        logmanager.addEntry(entryText);
+        update();
+    }
+
+    private void setStatus(String status) {
+        Status.setText("Status:  " + status);
+        reload(false, window);
     }
 }

@@ -13,7 +13,7 @@ public class FileManager {
     }
 
     //exceptions
-    public Exception ChooserException = new Exception("ChooserException");
+    public static Exception ChooserException = new Exception("No file selected, or unable to open file.");
 
     //methods
 
