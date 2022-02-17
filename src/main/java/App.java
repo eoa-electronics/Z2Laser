@@ -1,8 +1,8 @@
 public class App {
     public static void main(String args[]) {
-        AppUI appui = new AppUI();
-        LogManager logmanager = new LogManager(appui);
+        LogManager logmanager = new LogManager();
         logmanager.addEntry("Loading...");
-        logmanager.addEntry("Ready.");
+        AppUI appui = new AppUI(logmanager);
+        appui.addLog("Ready.");
     }
 }

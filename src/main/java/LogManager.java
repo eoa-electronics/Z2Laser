@@ -4,21 +4,17 @@ import java.util.List;
 public class LogManager {
     //attributes
     private List<LogEntry> log;
-    private AppUI ui;
+    public boolean logUpdated;
 
     //constructor
-    public LogManager(AppUI appui) {
+    public LogManager() {
+        logUpdated = false;
         log = new ArrayList<LogEntry>();
-        ui = appui;
-    }
-
-    private void updateAppUI() {
-        ui.updateLog(printLog());
     }
 
     public void addEntry(String entryText) {
         log.add(new LogEntry(entryText));
-        updateAppUI();
+        logUpdated = true;
     }
 
     public String printLog() {
@@ -27,5 +23,11 @@ public class LogManager {
             textOut = textOut.concat(entry.print() + "\n");
         }
         return(textOut);
+    }
+
+    public boolean isLogUpdated() {
+        boolean _temp = logUpdated;
+        logUpdated = false;
+        return _temp;
     }
 }
