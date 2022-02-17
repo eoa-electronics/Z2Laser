@@ -33,7 +33,7 @@ public class AppUI {
         //create window
         window = new JFrame("Z2Laser");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setSize(800, 1000);
+        window.setSize(1000, 1000);
 
         //get content pane
         Container pane = window.getContentPane();
@@ -94,11 +94,11 @@ public class AppUI {
         lm.gridy = 1;
         addObject(new JLabel("G-Code for Z-Down (Laser On):"), lm, _PanelSettings, window);
         lm.gridy = 2;
-        addObject(new JLabel("Delete all existing M3 / M5 Commands"), lm, _PanelSettings, window);
+        addObject(new JLabel("Delete all existing M3 / M5 Commands before processing (M3 is really recommended)"), lm, _PanelSettings, window);
         lm.gridy = 3;
         addObject(new JLabel("Laser On Power (S-Value)"), lm, _PanelSettings, window);
         lm.gridy = 4;
-        addObject(new JLabel("Add M5 at beginning / end (end is really recommended)"), lm, _PanelSettings, window);
+        addObject(new JLabel("Add M5 at beginning / end after processing (end is really recommended)"), lm, _PanelSettings, window);
         JButton _BtLoadDefaults = new JButton("Load Defaults");
         applyDesignButton(_BtLoadDefaults, colorButtonBG, colorButtonText);
         lm.gridy = 5;
@@ -124,13 +124,13 @@ public class AppUI {
         JCheckBox _CbDeleteM5 = new JCheckBox("M5");
         lm.gridx = 2;
         addObject(_CbDeleteM5, lm, _PanelSettings, window);
-        JCheckBox _CbAddM3 = new JCheckBox("M3");
+        JCheckBox _CbAddM5Beginning = new JCheckBox("Beginning");
         lm.gridx = 1;
         lm.gridy = 4;
-        addObject(_CbAddM3, lm, _PanelSettings, window);
-        JCheckBox _CbAddM5 = new JCheckBox("M5");
+        addObject(_CbAddM5Beginning, lm, _PanelSettings, window);
+        JCheckBox _CbAddM5End = new JCheckBox("End");
         lm.gridx = 2;
-        addObject(_CbAddM5, lm, _PanelSettings, window);
+        addObject(_CbAddM5End, lm, _PanelSettings, window);
 
         //G-Code editor inside border
         JPanel _PanelEditor = new JPanel(new GridBagLayout());
@@ -189,7 +189,7 @@ public class AppUI {
                     try{
                         File gcodeFile = fileman.selectorOpen();
                         addLog("Selected file '" + gcodeFile.toString() + "' successfully.");
-                        addLog("Opening file. Please wait...");
+                        addLog("Opening file... Please wait.");
                         setStatus("Opening... Please wait.");
                         FileHandler filehandler = new FileHandler(gcodeFile);
                         Editor.setText(filehandler.readText());
@@ -208,7 +208,7 @@ public class AppUI {
                     try{
                         File gcodeFile = fileman.selectorSave("nc", "NC G-Code");
                         addLog("Selected destination '" + gcodeFile.toString() + "' successfully.");
-                        addLog("Saving to '" + gcodeFile.toString() + "'. Please wait...");
+                        addLog("Saving to '" + gcodeFile.toString() + "'... Please wait.");
                         setStatus("Saving... Please wait.");
                         FileHandler filehandler = new FileHandler(gcodeFile);
                         filehandler.writeText(Editor.getText());
@@ -219,7 +219,53 @@ public class AppUI {
                     setStatus("Idle");
                 });
         //convert button
+        _BtConvert.addActionListener(a -> {
+            addLog("Processing G-Code... Please wait.");
+            setStatus("Processing... Please wait.");
+            boolean error = true;
+            if(_TfGcodeUp.getText().equals("")) {
+                addLog("Error: Please enter G-Code for moving Z UP. This will be converted to Laser OFF.");
+            } else if(_TfGcodeDown.getText().equals("")) {
+                addLog("Error: Please enter G-Code for moving Z DOWN. This will be converted to Laser ON.");
+            } else if((Integer)_SpLaserPower.getValue() < 1) {
+                addLog("Error: Please enter a power value for your laser when on. Must be > 0");
+            } else {
+                error = false;
+            }
+            if(!error) {
+                GCode manipulator = new GCode(Editor.getText());
+                String zUp = _TfGcodeUp.getText();
+                String zDown = _TfGcodeDown.getText();
+                Integer power = (Integer)_SpLaserPower.getValue();
+                boolean deleteM3 = _CbDeleteM3.isSelected();
+                boolean deleteM5 = _CbDeleteM5.isSelected();
+                boolean addM5Beginning = _CbAddM5Beginning.isSelected();
+                boolean addM5End = _CbAddM5End.isSelected();
 
+                if(deleteM3) {
+                    manipulator.removeLineBeginningWith("M3");
+                    manipulator.removeLineBeginningWith("M03");
+                }
+                if(deleteM5) {
+                    manipulator.deleteAll("M5\n");
+                    manipulator.deleteAll("M5");
+                    manipulator.deleteAll("M05\n");
+                    manipulator.deleteAll("M05");
+                }
+                manipulator.replaceAll(zUp, "M5");
+                manipulator.replaceAll(zDown, ("M3 S" + power.toString()));
+                if(addM5Beginning) {
+                    manipulator.add("M5\n", GCode.POSITION.BEGINNING);
+                }
+                if(addM5End) {
+                    manipulator.add("M5\n", GCode.POSITION.END);
+                }
+
+                Editor.setText(manipulator.getGcode());
+                addLog("Processed G-Code successfully.");
+            }
+            setStatus("Idle");
+        });
 
 
         //show window

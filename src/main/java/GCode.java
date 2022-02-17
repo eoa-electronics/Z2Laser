@@ -32,11 +32,16 @@ public class GCode {
     }
 
     public void add(String code, POSITION position) {
-        StringBuilder gcodeBuilder = new StringBuilder(gcode);
         if(position == POSITION.BEGINNING) {
-            gcodeBuilder.insert(0, code);
+            gcode = "M5\n" + gcode;
         } else if(position == POSITION.END) {
-            gcodeBuilder.insert(gcode.length(), code);
+            gcode = gcode + "\nM5\n";
         }
+    }
+
+    public void removeLineBeginningWith(String beginning) {
+        int indexBeginning = gcode.indexOf(beginning);
+        int indexLineEnd = gcode.indexOf("\n", indexBeginning);
+        gcode = gcode.replaceAll(gcode.substring(indexBeginning, (indexLineEnd + 1)), "");
     }
 }
