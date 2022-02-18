@@ -93,21 +93,21 @@ public class AppUI {
         addObject(new JLabel("G-Code for Z-Up (Laser Off):"), lm, _PanelSettings, window);
         lm.gridy = 1;
         addObject(new JLabel("G-Code for Z-Down (Laser On):"), lm, _PanelSettings, window);
-        lm.gridy = 2;
-        addObject(new JLabel("Delete all existing M3 / M5 Commands before processing (M3 is really recommended)"), lm, _PanelSettings, window);
         lm.gridy = 3;
-        addObject(new JLabel("Laser On Power (S-Value)"), lm, _PanelSettings, window);
+        addObject(new JLabel("Delete all existing M3 / M5 commands before processing (M3 is really recommended)"), lm, _PanelSettings, window);
+        lm.gridy = 2;
+        addObject(new JLabel("Laser-On Power (S-Value)"), lm, _PanelSettings, window);
         lm.gridy = 4;
-        addObject(new JLabel("Add M5 at beginning / end after processing (end is really recommended)"), lm, _PanelSettings, window);
-        JButton _BtLoadDefaults = new JButton("Load Defaults");
-        applyDesignButton(_BtLoadDefaults, colorButtonBG, colorButtonText);
+        addObject(new JLabel("Add M5 at file beginning / end after processing (file end is really recommended)"), lm, _PanelSettings, window);
+        JButton _BtLoadSettings = new JButton("Load Default Settings");
+        applyDesignButton(_BtLoadSettings, colorButtonBG, colorButtonText);
         lm.gridy = 5;
-        addObject(_BtLoadDefaults, lm, _PanelSettings, window);
-        JButton _BtSaveDefaults = new JButton("Save as Defaults");
-        applyDesignButton(_BtSaveDefaults, colorButtonBG, colorButtonText);
+        addObject(_BtLoadSettings, lm, _PanelSettings, window);
+        JButton _BtSaveSettings = new JButton("Save as Default Settings");
+        applyDesignButton(_BtSaveSettings, colorButtonBG, colorButtonText);
         lm.gridx = 1;
         lm.gridwidth = 2;
-        addObject(_BtSaveDefaults, lm, _PanelSettings, window);
+        addObject(_BtSaveSettings, lm, _PanelSettings, window);
         JTextField _TfGcodeUp = new JTextField();
         lm.gridy = 0;
         addObject(_TfGcodeUp, lm, _PanelSettings, window);
@@ -115,11 +115,11 @@ public class AppUI {
         lm.gridy = 1;
         addObject(_TfGcodeDown, lm, _PanelSettings, window);
         JSpinner _SpLaserPower = new JSpinner();
-        lm.gridy = 3;
+        lm.gridy = 2;
         addObject(_SpLaserPower, lm, _PanelSettings, window);
         lm.gridwidth = 1;
         JCheckBox _CbDeleteM3 = new JCheckBox("M3");
-        lm.gridy = 2;
+        lm.gridy = 3;
         addObject(_CbDeleteM3, lm, _PanelSettings, window);
         JCheckBox _CbDeleteM5 = new JCheckBox("M5");
         lm.gridx = 2;
@@ -264,6 +264,29 @@ public class AppUI {
                 Editor.setText(manipulator.getGcode());
                 addLog("Processed G-Code successfully.");
             }
+            setStatus("Idle");
+        });
+        //load settings button
+        _BtLoadSettings.addActionListener(a ->
+        {
+            setStatus("Loading Settings... Please wait.");
+            SettingsPersistent settings = new SettingsPersistent(this);
+            settings.loadSettings();
+            _TfGcodeUp.setText(settings.getZUp());
+            _TfGcodeDown.setText(settings.getZDown());
+            _SpLaserPower.setValue(settings.getPwr());
+            _CbDeleteM3.setSelected(settings.getDelM3());
+            _CbDeleteM5.setSelected(settings.getDelM5());
+            _CbAddM5Beginning.setSelected(settings.getAddM5B());
+            _CbAddM5End.setSelected(settings.getAddM5E());
+            setStatus("Idle");
+        });
+        _BtSaveSettings.addActionListener(a ->
+        {
+            setStatus("Saving Settings... Please wait.");
+            SettingsPersistent settings = new SettingsPersistent(this);
+            settings.writeSettings(_TfGcodeUp.getText(), _TfGcodeDown.getText(), (Integer)_SpLaserPower.getValue(), _CbDeleteM3.isSelected(), _CbDeleteM5.isSelected(), _CbAddM5Beginning.isSelected(), _CbAddM5End.isSelected());
+            settings.saveSettings();
             setStatus("Idle");
         });
 

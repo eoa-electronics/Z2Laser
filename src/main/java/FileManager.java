@@ -24,7 +24,6 @@ public class FileManager {
         if(result == JFileChooser.APPROVE_OPTION) {
             return(chooser.getSelectedFile());
         } else {
-            System.out.println("ERROR: No file selected, or unable to open file.");
             throw ChooserException;
         }
     }
@@ -38,7 +37,6 @@ public class FileManager {
         if(result == JFileChooser.APPROVE_OPTION) {
             return(chooser.getSelectedFile());
         } else {
-            System.out.println("ERROR: No file selected, or unable to open file.");
             throw ChooserException;
         }
     }
@@ -50,7 +48,6 @@ public class FileManager {
         if(result == JFileChooser.APPROVE_OPTION) {
             return(chooser.getSelectedFile());
         } else {
-            System.out.println("ERROR: No file selected / created, or unable to save file to this directory.");
             throw ChooserException;
         }
     }
@@ -71,7 +68,6 @@ public class FileManager {
                 return (new File(nameNew));
             }
         } else {
-            System.out.println("ERROR: No file selected / created, or unable to save file to this directory.");
             throw ChooserException;
         }
     }

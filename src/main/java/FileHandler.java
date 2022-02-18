@@ -24,7 +24,6 @@ public class FileHandler {
             scanner.close();
             return(text);
         } catch(FileNotFoundException ex) {
-            System.out.println("ERROR: File was not found, or not readable!");
             throw ex;
         }
     }
@@ -35,7 +34,6 @@ public class FileHandler {
             writer.write(text);
             writer.close();
         } catch(IOException ex) {
-            System.out.println("ERROR: File was not found, or not writeable!");
             throw ex;
         }
     }
