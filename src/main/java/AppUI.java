@@ -99,11 +99,11 @@ public class AppUI {
         addObject(new JLabel("Laser-On Power (S-Value)"), lm, _PanelSettings, window);
         lm.gridy = 4;
         addObject(new JLabel("Add M5 at file beginning / end after processing (file end is really recommended)"), lm, _PanelSettings, window);
-        JButton _BtLoadSettings = new JButton("Load Default Settings");
+        JButton _BtLoadSettings = new JButton("Load Preset");
         applyDesignButton(_BtLoadSettings, colorButtonBG, colorButtonText);
         lm.gridy = 5;
         addObject(_BtLoadSettings, lm, _PanelSettings, window);
-        JButton _BtSaveSettings = new JButton("Save as Default Settings");
+        JButton _BtSaveSettings = new JButton("Save as Preset");
         applyDesignButton(_BtSaveSettings, colorButtonBG, colorButtonText);
         lm.gridx = 1;
         lm.gridwidth = 2;
