@@ -294,6 +294,19 @@ public class AppUI {
         //show window
         setVisibility(true, window);
         setStatus("Idle");
+
+        //automatically load default settings in window open
+        setStatus("Loading Settings... Please wait.");
+        SettingsPersistent settings = new SettingsPersistent(this);
+        settings.loadSettings();
+        _TfGcodeUp.setText(settings.getZUp());
+        _TfGcodeDown.setText(settings.getZDown());
+        _SpLaserPower.setValue(settings.getPwr());
+        _CbDeleteM3.setSelected(settings.getDelM3());
+        _CbDeleteM5.setSelected(settings.getDelM5());
+        _CbAddM5Beginning.setSelected(settings.getAddM5B());
+        _CbAddM5End.setSelected(settings.getAddM5E());
+        setStatus("Idle");
     }
 
     //methods
