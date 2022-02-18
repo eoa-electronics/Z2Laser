@@ -1,4 +1,3 @@
-//import com.github.cliftonlabs.json_simple.*;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -151,13 +150,6 @@ public class SettingsPersistent {
                 appui.addLog("Settings file not found or unable to open.");
                 createSettingsFile(true);
             }
-            /*
-            if(!(data.equals(""))) {
-                settings = new JSONObject(data);
-                isLoaded = true;
-                appui.addLog("Settings loaded successfully.");
-            }
-             */
         }
     }
 
