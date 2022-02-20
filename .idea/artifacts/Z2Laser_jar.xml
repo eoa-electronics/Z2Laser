@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Z2Laser:jar">
+    <output-path>$PROJECT_DIR$/builds/artifacts/Z2Laser_jar</output-path>
+    <root id="archive" name="Z2Laser.jar">
+      <element id="module-output" name="Z2Laser" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/json/json/20211205/json-20211205.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
