@@ -25,7 +25,7 @@ This was developed for FlatCAM, so you can Laser-Etch your PCB trace isolations,
 <br>
 
 ### **Installation**
-1. (If not already done: Install a Java 17 runtime (JRE 17))
+1. If not already done: Install a Java 17 runtime ([Download JDK 17](https://www.oracle.com/java/technologies/downloads/#jdk17))
 2. Download the executable from the releases section (Z2Laser-V1.0.jar)
 3. Put the executable somewhere on your computer (It is not recommended, to keep it in your Downloads folder!).
 4. (If you want to: Create a shortcut to your desktop and/or start menu)
